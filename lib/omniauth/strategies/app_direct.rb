@@ -1,12 +1,9 @@
 require 'omniauth'
-require 'rack/openid'
-require 'openid/store/memory'
+require 'omniauth/openid'
 
 module OmniAuth
   module Strategies
-    # OmniAuth strategy for connecting via OpenID. This allows for connection
-    # to a wide variety of sites, some of which are listed [on the OpenID website](http://openid.net/get-an-openid/).
-    class OpenID
+    class Appdirect < OmniAuth::Strategies::OpenID
       include OmniAuth::Strategy
 
       AX = {
@@ -118,5 +115,7 @@ module OmniAuth
   end
 end
 
-OmniAuth.config.add_camelization 'openid', 'OpenID'
-OmniAuth.config.add_camelization 'open_id', 'OpenID'
+OmniAuth.config.add_camelization 'appdirect', 'AppDirect'
+OmniAuth.config.add_camelization 'app_direct', 'AppDirect'
+OmniAuth.config.add_camelization 'app-direct', 'AppDirect'
+
