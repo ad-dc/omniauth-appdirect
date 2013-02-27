@@ -3,7 +3,7 @@ require 'omniauth/openid'
 
 module OmniAuth
   module Strategies
-    class Appdirect < OmniAuth::Strategies::OpenID
+    class AppDirect < OmniAuth::Strategies::OpenID
       include OmniAuth::Strategy
 
       AX = {
