@@ -26,41 +26,13 @@ module OmniAuth
       option :identifier_param, 'openid_url'
 
       def identifier
-        i = options.identifier || request.params[options.identifier_param.to_s]
-        i = nil if i == ''
+        i = 'https://www.appdirect.com/openid/id'
+        i = env['rack.session']['openid_url'] if env && env['rack.session'] && env['rack.session']['openid_url']
         i
       end
       
-      def request_phase
-        identifier ? start : get_identifier
-      end
-
-      def start
-        openid = Rack::OpenID.new(dummy_app, options[:store])
-        response = openid.call(env)
-        case env['rack.openid.response']
-        when Rack::OpenID::MissingResponse, Rack::OpenID::TimeoutResponse
-          fail!(:connection_failed)
-        else
-          response
-        end
-      end
-
       def get_identifier
-        f = OmniAuth::Form.new(:title => 'OpenID Authentication')
-        f.label_field('OpenID Identifier', options.identifier_param)
-        f.input_field('url', options.identifier_param)
-        f.to_response
-      end
-
-      uid { openid_response.display_identifier }
-
-      info do
-        sreg_user_info.merge(ax_user_info)
-      end
-
-      extra do
-        {'response' => openid_response}
+        env['rack.session']['openid_url'] || 'https://www.appdirect.com/openid/id'
       end
 
       def callback_phase
