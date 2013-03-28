@@ -18,6 +18,8 @@ module OmniAuth
         :roles => 'https://www.appdirect.com/schema/user/roles'
       }
 
+      attr_reader :access_token
+
       option :name, :appdirect
       option :required, [AX[:email], AX[:name], AX[:first_name], AX[:last_name], 'email', 'fullname', AX[:roles] ]
       option :optional, [AX[:nickname], AX[:city], AX[:state], AX[:website], AX[:image], 'postcode', 'nickname']
@@ -44,6 +46,27 @@ module OmniAuth
         ax = ::OpenID::AX::FetchResponse.from_success_response(openid_response)
         super
       end
+
+      def get_appdirect_attr(attribute)
+        openid_response.message.get_arg('http://openid.net/srv/ax/1.0', attribute)
+      end
+
+      # Parsing the roles out of the return schema. 
+      # Roles might be in the value.ext4 field if there is only one, 
+      # or possibly in the value.ext4.N fields if there are many. 
+      # Assume the worst: check both places  and reject any nils from the result.
+      def roles
+        [get_appdirect_attr('value.ext4')].tap do |roles|     # Roles array starts with one value: value.ext4 (possibly nil)
+          get_appdirect_attr('count.ext4').to_i.times do |i|  # Then we use the roles count to cycle through each role variable 
+            roles << get_appdirect_attr("value.ext4.#{i+1}")  # And shift it into the array
+          end
+        end.reject {|v| !v } # remove nils 
+      end
+
+      extra do          
+        { :roles => roles }
+      end
+
     end
   end
 end
