@@ -28,7 +28,8 @@ module OmniAuth
       option :identifier_param, 'openid_url'
 
       def identifier
-        i = 'https://www.appdirect.com/openid/id'
+        i = super
+        i ||= 'https://www.appdirect.com/openid/id'
         i = env['rack.session']['openid_url'] if env && env['rack.session'] && env['rack.session']['openid_url']
         i
       end
