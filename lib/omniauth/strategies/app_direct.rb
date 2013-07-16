@@ -27,6 +27,10 @@ module OmniAuth
       option :identifier, nil
       option :identifier_param, 'openid_url'
 
+      def realm_url
+        full_host ? full_host : super
+      end
+      
       def identifier
         i = super
         i ||= 'https://www.appdirect.com/openid/id'
